@@ -2,7 +2,6 @@ import React from "react";
 import Cart from "./cartComponents/Cart";
 import ReactDOM from "react-dom/client";
 
-//import styling
 import './styles/style.css';
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
