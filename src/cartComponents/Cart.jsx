@@ -2,17 +2,23 @@ import React from "react";
 import CartList from "./CartList";
 import { getData } from "../utils/data";
 import CartInput from "./CartInput";
+import EditModal from "./EditModal";
 
 class Cart extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-       Carts: getData()
+            Carts: getData(),
+            keyword: "",
+            editingCart: null
         };
 
-        this.onDeleteHandler = this.onDeleteHandler.bind(this);
-        this.onAddCartHandler = this.onAddCartHandler.bind(this);
+        this.onDeleteHandler = this.onDeleteHandler.bind(this)
+        this.onAddCartHandler = this.onAddCartHandler.bind(this)
+        this.onEditHandler = this.onEditHandler.bind(this)
+        this.onKeywordChangedHandler = this.onKeywordChangedHandler.bind(this)
+        this.onUpdateHandler = this.onUpdateHandler.bind(this);
     }
 
     onDeleteHandler(id){
@@ -40,14 +46,51 @@ class Cart extends React.Component {
             size,
             price: Number(price),
             imageUrl
-        };
+        }
 
         this.setState(prevState => ({
             Carts: [...prevState.Carts, newCart]
-        }));
+        }))
+    }
+
+    onEditHandler(id){
+         const editingCart =
+            this.state.Carts.find(
+                cart => cart.id === id
+            );
+
+        this.setState({
+            editingCart
+        });
+    }
+
+    onKeywordChangedHandler(event){
+        this.setState({
+            keyword: event.target.value
+        })
+    }
+
+     onUpdateHandler(id, newData){
+        const Carts = this.state.Carts.map(cart=>
+            cart.id === id? 
+                {...cart, ...newData}
+                : cart
+        )
+
+        this.setState({
+            Carts,
+            editingCart: null
+        })
     }
 
     render() {
+
+        const filteredCarts = this.state.Carts.filter(cart =>
+            cart.name.toLowerCase().includes(
+                this.state.keyword.toLowerCase()
+            )
+        );
+        
         return (
             <div className="cart">
                 <h1>Chendoll</h1>
@@ -55,14 +98,30 @@ class Cart extends React.Component {
                 <div className="cart-content">
 
                     <CartList
-                        Carts={this.state.Carts}
+                        Carts={filteredCarts}
                         onDelete={this.onDeleteHandler}
+                        keyword={this.state.keyword}
+                        onKeywordChanged={this.onKeywordChangedHandler}
+                        onEdit={this.onEditHandler}
                     />
 
-                    <CartInput
-                        addCart={this.onAddCartHandler}
-                    />
-
+                    {
+                        this.state.editingCart ? (
+                            <EditModal
+                                cart={this.state.editingCart}
+                                onSave={this.onUpdateHandler}
+                                onClose={() =>
+                                    this.setState({
+                                        editingCart: null
+                                    })
+                                }
+                            />
+                        ) : (
+                            <CartInput
+                                addCart={this.onAddCartHandler}
+                            />
+                        )
+                    }
                 </div>
             </div>
         )

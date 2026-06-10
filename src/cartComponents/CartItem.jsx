@@ -2,6 +2,7 @@ import React from "react";
 import CartBody from "./CartBody";
 import CartImage from "./CartImage";
 import DeleteButton from "./DeleteButton";
+import EditButton from "./EditButton"
 
 function CartItem({
     imageUrl,
@@ -10,7 +11,8 @@ function CartItem({
     size,
     price,
     id,
-    onDelete
+    onDelete,
+    onEdit
 }) {
     return (
         <div className="cart-item">
@@ -22,6 +24,11 @@ function CartItem({
                 size={size}
                 price={price}
             />
+
+            <EditButton 
+                id={id}
+                onEdit={onEdit}
+                />
 
             <DeleteButton
                 id={id}
